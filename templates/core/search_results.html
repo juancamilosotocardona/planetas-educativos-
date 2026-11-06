@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Resultados de búsqueda | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="container page-hero">
+  <p class="eyebrow">Búsqueda</p>
+  <h1>Resultados para: {{ query|default:'todo el contenido' }}</h1>
+</section>
+
+<section class="container search-results">
+  <div class="filter-bar">
+    <form method="get" action="{% url 'search_results' %}" class="filter-form">
+      <input type="search" name="q" value="{{ query }}" placeholder="Buscar publicaciones" />
+      <select name="category">
+        <option value="">Todas las categorías</option>
+        {% for category in categories %}
+          <option value="{{ category.slug }}" {% if category.slug == category_slug %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="primary-button">Filtrar</button>
+    </form>
+  </div>
+
+  {% if posts %}
+    <div class="content-grid">
+      {% for post in posts %}
+        <article class="content-card">
+          {% if post.cover_image %}
+            <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
+          {% endif %}
+          <div class="content-body">
+            <span class="post-meta">{{ post.category.name }} · {{ post.created_at|date:'d M Y' }}</span>
+            <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+            <p>{{ post.summary }}</p>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="pagination">
+      {% if posts.has_previous %}
+        <a href="?q={{ query }}&category={{ category_slug }}&page={{ posts.previous_page_number }}">Anterior</a>
+      {% endif %}
+      <span>Página {{ posts.number }} de {{ posts.paginator.num_pages }}</span>
+      {% if posts.has_next %}
+        <a href="?q={{ query }}&category={{ category_slug }}&page={{ posts.next_page_number }}">Siguiente</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No se encontraron resultados. Intenta otra búsqueda o cambia el filtro.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

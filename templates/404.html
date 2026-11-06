@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Página no encontrada | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="container not-found-shell">
+  <div class="empty-state">
+    <p class="eyebrow">Error 404</p>
+    <h1>Página no encontrada</h1>
+    <p>La ruta solicitada no existe o el contenido ya no está disponible.</p>
+    <a href="{% url 'home' %}" class="primary-button">Volver al inicio</a>
+  </div>
+</section>
+{% endblock %}

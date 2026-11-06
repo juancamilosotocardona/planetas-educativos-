@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-copy">
+      <div class="brand-lockup">
+        <span class="brand-mark">✦</span>
+        <span>Planetas Educativos</span>
+      </div>
+      <p class="eyebrow">Acceso privado</p>
+      <h1>Panel editorial</h1>
+      <p>Publica contenidos, recursos y materiales de aprendizaje por planeta, con control de archivos, videos y textos desde un solo lugar.</p>
+      <div class="auth-status">
+        <span class="status-pill online">Sistema activo</span>
+        <span class="status-pill">Contenido verificado</span>
+      </div>
+      <div class="planet-list" aria-label="Planetas disponibles">
+        <span>Mercurio</span>
+        <span>Venus</span>
+        <span>Tierra</span>
+        <span>Marte</span>
+        <span>Júpiter</span>
+        <span>Saturno</span>
+        <span>Urano</span>
+        <span>Neptuno</span>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="auth-panel">
+        <div class="auth-panel-header">
+          <div>
+            <p class="panel-kicker">Acceso autorizado</p>
+            <h2>Iniciar sesión</h2>
+          </div>
+          <span class="lock-icon">🔐</span>
+        </div>
+
+        <form method="post" class="stacked-form auth-form">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="primary-button">Entrar al panel</button>
+        </form>
+
+        <div class="auth-secondary-actions">
+          <a href="/" class="inline-link">Volver al universo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Panel de administración | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="container dashboard-shell">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Panel privado</p>
+      <h1>Gestión de contenidos</h1>
+    </div>
+    <div class="dashboard-actions">
+      <a class="primary-button" href="{% url 'category_create' %}">Nueva categoría</a>
+      <button type="button" class="primary-button" id="openPlanetPicker">Nueva publicación</button>
+    </div>
+  </div>
+
+  <div class="planet-strip" aria-label="Seleccionar planeta para publicar">
+    {% for category in categories %}
+      <button type="button" class="planet-mini-button" data-category="{{ category.slug }}" data-name="{{ category.name }}" style="--planet-color: {{ category.accent_color|default:'#7dd3fc' }}; --planet-shadow: {{ category.orbit_color|default:'rgba(125,211,252,0.7)' }};">
+        <span class="planet-mini-orbit"></span>
+        <span class="planet-mini-sphere"></span>
+        <span class="planet-mini-name">{{ category.name }}</span>
+      </button>
+    {% endfor %}
+  </div>
+
+  <div id="planetChooserModal" class="chooser-modal" hidden>
+    <div class="chooser-modal__panel">
+      <div class="chooser-modal__header">
+        <div>
+          <p class="eyebrow">Publicar contenido</p>
+          <h2 id="selectedPlanetTitle">Selecciona un planeta</h2>
+        </div>
+        <button type="button" class="close-chooser" aria-label="Cerrar">×</button>
+      </div>
+
+      <p class="chooser-copy">¿Qué tipo de contenido quieres subir para este planeta?</p>
+      <div class="chooser-grid">
+        <a href="" class="choice-card" data-media="pdf">
+          <span class="choice-icon">PDF</span>
+          <strong>Documento</strong>
+          <small>Guías, fichas o materiales</small>
+        </a>
+        <a href="" class="choice-card" data-media="image">
+          <span class="choice-icon">IMG</span>
+          <strong>Foto</strong>
+          <small>Imágenes o infografías</small>
+        </a>
+        <a href="" class="choice-card" data-media="video">
+          <span class="choice-icon">VID</span>
+          <strong>Video</strong>
+          <small>Enlace a video o demostración</small>
+        </a>
+        <a href="" class="choice-card" data-media="text">
+          <span class="choice-icon">TXT</span>
+          <strong>Texto</strong>
+          <small>Artículo, noticia o resumen</small>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Planeta</th>
+          <th>Estado</th>
+          <th>Autor</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+          <tr>
+            <td>{{ post.title }}</td>
+            <td>{{ post.category.name }}</td>
+            <td>{{ post.get_status_display }}</td>
+            <td>{{ post.author.get_full_name|default:post.author.username }}</td>
+            <td class="table-actions">
+              <a href="{% url 'post_edit' post.pk %}">Editar</a>
+              <form method="post" action="{% url 'post_delete' post.pk %}">{% csrf_token %}<button type="submit" class="danger-button">Eliminar</button></form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    {% if posts.has_previous %}
+      <a href="?page={{ posts.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Anterior</a>
+    {% endif %}
+    <span>Página {{ posts.number }} de {{ posts.paginator.num_pages }}</span>
+    {% if posts.has_next %}
+      <a href="?page={{ posts.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Siguiente</a>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('planetChooserModal');
+    const title = document.getElementById('selectedPlanetTitle');
+    const closeBtn = document.querySelector('.close-chooser');
+    const openBtn = document.getElementById('openPlanetPicker');
+    const planetButtons = document.querySelectorAll('.planet-mini-button');
+    const choiceLinks = document.querySelectorAll('.choice-card');
+
+    let selectedCategory = '';
+
+    const openModal = (planetSlug, planetName) => {
+      selectedCategory = planetSlug;
+      title.textContent = planetName;
+      choiceLinks.forEach((link) => {
+        link.href = `/panel/publicacion/nueva/?category=${encodeURIComponent(planetSlug)}&type=${encodeURIComponent(link.dataset.media)}`;
+      });
+      modal.hidden = false;
+    };
+
+    planetButtons.forEach((button) => {
+      button.addEventListener('click', () => openModal(button.dataset.category, button.dataset.name));
+    });
+
+    openBtn.addEventListener('click', () => {
+      const firstPlanet = planetButtons[0];
+      if (firstPlanet) openModal(firstPlanet.dataset.category, firstPlanet.dataset.name);
+    });
+
+    closeBtn.addEventListener('click', () => modal.hidden = true);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) modal.hidden = true;
+    });
+  });
+</script>
+{% endblock %}

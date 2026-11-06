@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="page-hero container">
+  <p class="eyebrow">Categoría</p>
+  <h1>{{ category.name }}</h1>
+  <p>{{ category.description }}</p>
+</section>
+
+<section class="container content-list">
+  {% if posts %}
+    {% for post in posts %}
+      <article class="detail-card">
+        {% if post.cover_image %}
+          <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
+        {% endif %}
+        <div>
+          <span class="post-meta">{{ post.created_at|date:'d M Y' }} · {{ post.author.get_full_name|default:post.author.username }}</span>
+          <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+          <p>{{ post.summary }}</p>
+          <a href="{{ post.get_absolute_url }}" class="primary-button">Leer más</a>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <p>Aún no hay publicaciones publicadas en esta categoría.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

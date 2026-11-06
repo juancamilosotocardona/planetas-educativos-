@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Planetas Educativos | Inicio{% endblock %}
+{% block content %}
+{% if category_data %}
+  {{ category_data|json_script:"planet-data" }}
+{% endif %}
+
+<section class="home-page">
+  <div class="entry-gate" id="entryGate" role="dialog" aria-modal="true" aria-labelledby="entryGateTitle" data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+    <div class="entry-gate__panel">
+      <p class="eyebrow">Planetas Educativos</p>
+      <h2 id="entryGateTitle">¿Cómo quieres entrar?</h2>
+      <p>Inicia sesión si vas a publicar contenido, o entra como invitado para explorar el universo educativo.</p>
+      <div class="entry-gate__actions">
+        <button type="button" class="primary-button" id="guestEntryButton">Entrar como invitado</button>
+        <a href="{% url 'login' %}" class="secondary-button">Iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="solar-view">
+    <div id="solar-canvas" aria-label="Sistema solar 3D"></div>
+
+    <div class="scene-ui" aria-live="polite">
+      <div class="top-strip">
+        <div class="brand-mini">Planetas Educativos</div>
+        <button type="button" class="access-switch" id="reopenAccessButton">Entrar / Invitado</button>
+      </div>
+
+      <aside id="planetInfoPanel" class="planet-info-panel" hidden aria-live="polite">
+        <p class="eyebrow">Planeta</p>
+        <h3 id="planetInfoTitle">Explora el sistema</h3>
+        <p id="planetInfoDescription">Selecciona un planeta para ver sus contenidos y recursos educativos.</p>
+        <div id="planetInfoMeta" class="planet-info-meta"></div>
+        <div id="planetInfoPosts" class="planet-info-posts"></div>
+      </aside>
+
+      <div class="scene-toolbar">
+        <button type="button" id="togglePause">Pausar</button>
+        <button type="button" id="toggleLabels">Etiquetas</button>
+        <button type="button" id="toggleOrbits">Órbitas</button>
+        <button type="button" id="focusSun">Sol</button>
+      </div>
+
+      <div class="speed-control">
+        <label for="speedRange">Velocidad orbital</label>
+        <input id="speedRange" type="range" min="0.3" max="3" step="0.1" value="1" />
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Planetas Educativos: contenidos de educación física, deportes, entrenamiento y recursos educativos." />
+    <title>{% block title %}Planetas Educativos{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body class="{% if request.path == '/' %}page-home{% endif %}">
+    <div class="page-shell">
+      <header class="site-header">
+        <div class="container header-inner">
+          <a class="brand" href="{% url 'home' %}" aria-label="Planetas Educativos inicio">
+            <span class="brand-mark">P</span>
+            <span>Planetas Educativos</span>
+          </a>
+          <nav class="main-nav" aria-label="Navegación principal">
+            <a href="{% url 'home' %}">Inicio</a>
+            <a href="#categorias">Categorías</a>
+            <a href="#recientes">Recientes</a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'dashboard' %}">Panel</a>
+              <a href="{% url 'logout' %}">Cerrar sesión</a>
+            {% else %}
+              <a href="{% url 'login' %}">Acceso</a>
+            {% endif %}
+          </nav>
+        </div>
+      </header>
+
+      {% if messages %}
+        <div class="container toastr-wrap" aria-live="polite">
+          {% for message in messages %}
+            <div class="toastr {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+  </body>
+</html>

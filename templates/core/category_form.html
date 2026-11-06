@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | Planetas Educativos{% endblock %}
+{% block content %}
+<section class="container form-shell">
+  <h1>{{ title }}</h1>
+  <form method="post" class="stacked-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="primary-button">Guardar</button>
+    <a href="{% url 'dashboard' %}" class="secondary-button">Cancelar</a>
+  </form>
+</section>
+{% endblock %}
