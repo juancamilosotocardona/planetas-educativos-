@@ -45,7 +45,7 @@ def ensure_default_categories(sender=None, **kwargs):
         },
         {
             'name': 'Venus',
-            'description': 'Recursos sobre salud, movimiento y preparación física con enfoque global.',
+            'description': 'Descripción: Este planeta está dedicado a mostrar, a través de videos tutoriales narrados, el proceso de elaboración de manualidades, desde la creación de títeres hasta la creación de máscaras, entre otras actividades. Estos videos podrán servir como referencia para crear sus propias manualidades y adaptarlas a sus clases.',
             'accent_color': '#f4c27a',
             'orbit_color': '#f4c27a',
             'order': 2,
