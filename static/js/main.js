@@ -44,6 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
+  const targetPlanetReference = {
+    venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 398 / 335 },
+    tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 328 / 307 },
+    mercurio: { label: 'Planeta Lógica', texture: '/static/images/planeta-logica.png', aspect: 575 / 510 },
+  };
+
   if (!canvasHost) return;
 
   const isAuthenticated = entryGate ? entryGate.dataset.authenticated === 'true' : false;
@@ -385,7 +391,17 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.restore();
   };
 
-  const createPlanetSurfaceCanvas = (planetKey) => {
+  const createPlanetTexture = (planetKey) => {
+    const reference = targetPlanetReference[planetKey];
+    if (reference) {
+      const texture = new THREE.TextureLoader().load(reference.texture);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.needsUpdate = true;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      return texture;
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = 2048;
     canvas.height = 2048;
@@ -399,102 +415,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handler = handlers[planetKey];
     if (!handler) {
-      return canvas;
+      return null;
     }
 
     handler(ctx, canvas.width, canvas.height);
 
-    const light = ctx.createRadialGradient(
-      canvas.width * 0.3,
-      canvas.height * 0.22,
-      canvas.width * 0.08,
-      canvas.width * 0.5,
-      canvas.height * 0.5,
-      canvas.width * 0.7
-    );
-    light.addColorStop(0, 'rgba(255,255,255,0.72)');
-    light.addColorStop(0.22, 'rgba(255,255,255,0.28)');
-    light.addColorStop(0.62, 'rgba(255,255,255,0.08)');
-    light.addColorStop(1, 'rgba(2,6,23,0.22)');
-    ctx.fillStyle = light;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const shadow = ctx.createRadialGradient(
-      canvas.width * 0.72,
-      canvas.height * 0.68,
-      30,
-      canvas.width * 0.68,
-      canvas.height * 0.72,
-      canvas.width * 0.5
-    );
-    shadow.addColorStop(0, 'rgba(0,0,0,0)');
-    shadow.addColorStop(0.55, 'rgba(6,11,21,0.12)');
-    shadow.addColorStop(1, 'rgba(6,11,21,0.48)');
-    ctx.fillStyle = shadow;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const rim = ctx.createRadialGradient(
-      canvas.width * 0.26,
-      canvas.height * 0.2,
-      10,
-      canvas.width * 0.24,
-      canvas.height * 0.2,
-      canvas.width * 0.42
-    );
-    rim.addColorStop(0, 'rgba(255,255,255,0.9)');
-    rim.addColorStop(0.5, 'rgba(255,255,255,0.2)');
-    rim.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = rim;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    return canvas;
-  };
-
-  const createPlanetBumpTexture = (canvas) => {
-    const bumpCanvas = document.createElement('canvas');
-    bumpCanvas.width = canvas.width;
-    bumpCanvas.height = canvas.height;
-    const bumpCtx = bumpCanvas.getContext('2d');
-    bumpCtx.drawImage(canvas, 0, 0);
-
-    const imageData = bumpCtx.getImageData(0, 0, bumpCanvas.width, bumpCanvas.height);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const luma = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-      const height = Math.max(0, Math.min(255, luma * 0.72 + 25));
-      data[i] = height;
-      data[i + 1] = height;
-      data[i + 2] = height;
-    }
-
-    bumpCtx.putImageData(imageData, 0, 0);
-
-    const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
-    bumpTexture.needsUpdate = true;
-    return bumpTexture;
-  };
-
-  const createPlanetTexture = (planetKey) => {
-    const canvas = createPlanetSurfaceCanvas(planetKey);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.needsUpdate = true;
-    return { texture, bumpTexture: createPlanetBumpTexture(canvas) };
+    return texture;
   };
 
   const createPlanetMaterial = (planetKey, planetColor) => {
-    const { texture, bumpTexture } = createPlanetTexture(planetKey);
-    return new THREE.MeshStandardMaterial({
+    const texture = createPlanetTexture(planetKey);
+    return new THREE.MeshPhysicalMaterial({
       map: texture,
-      bumpMap: bumpTexture,
-      bumpScale: 0.4,
       color: planetColor,
-      emissive: new THREE.Color(planetColor).multiplyScalar(0.14),
-      emissiveIntensity: 0.18,
-      roughness: 0.9,
+      emissive: new THREE.Color(planetColor).multiplyScalar(0.08),
+      emissiveIntensity: 0.16,
+      roughness: 0.82,
       metalness: 0.12,
-      envMapIntensity: 0.7,
+      clearcoat: 0.18,
+      clearcoatRoughness: 0.7,
+      sheen: 0.28,
+      reflectivity: 0.28,
     });
   };
 
@@ -552,16 +496,21 @@ document.addEventListener('DOMContentLoaded', () => {
     orbit.add(orbitLine);
     orbitMeshes.push(orbitLine);
 
+    const reference = targetPlanetReference[planet.key];
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(planet.radius, 64, 64),
       createPlanetMaterial(planet.key, planet.color)
     );
     mesh.position.set(planet.distanceScale, 0, 0);
     mesh.rotation.y = Math.random() * Math.PI;
+    if (reference) {
+      mesh.scale.set(reference.aspect, 1, 1);
+    }
     orbit.add(mesh);
     planetMeshes.push(mesh);
 
-    const label = makeLabelSprite(planet.name);
+    const labelText = reference ? reference.label : planet.name;
+    const label = makeLabelSprite(labelText);
     label.position.set(0, planet.radius + 5, 0);
     mesh.add(label);
     labelSprites.push(label);
@@ -646,7 +595,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!planet) return;
     selectedPlanet = planet;
     planet.mesh.material.emissiveIntensity = 0.7;
-    planet.mesh.scale.setScalar(1.12);
+    const aspect = targetPlanetReference[planet.key]?.aspect ?? 1;
+    planet.mesh.scale.set(aspect * 1.12, 1.12, 1.12);
     renderPlanetInfoPanel(planet);
     controls.target.copy(planet.mesh.getWorldPosition(new THREE.Vector3()));
     camera.position.lerp(planet.mesh.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 18, 32)), 0.18);
@@ -655,7 +605,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const deselectPlanet = () => {
     if (!selectedPlanet) return;
     selectedPlanet.mesh.material.emissiveIntensity = 0.18;
-    selectedPlanet.mesh.scale.setScalar(1);
+    const aspect = targetPlanetReference[selectedPlanet.key]?.aspect ?? 1;
+    selectedPlanet.mesh.scale.set(aspect, 1, 1);
     selectedPlanet = null;
     hideInfoPanel();
   };
