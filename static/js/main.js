@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const targetPlanetReference = {
     venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 398 / 335 },
     tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 328 / 307 },
-    mercurio: { label: 'Planeta Lógica', texture: '/static/images/planeta-logica.png', aspect: 575 / 510 },
+    mercurio: { label: 'Motricidad y coordinación corporal', texture: '/static/images/planeta-logica.png', aspect: 575 / 510 },
   };
 
   if (!canvasHost) return;
