@@ -33,22 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'neptuno', name: 'Neptuno', diameter: '49.244 km', distance: '4.5 B km', day: '16 h', year: '165 años', temperature: '-200°C', composition: 'Hidrógeno, helio, metano', moons: 14, color: '#4e89ff', orbitSpeed: 0.009, radius: 5, distanceScale: 196 },
   ];
 
+  const targetPlanetReference = {
+    venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 1.08 },
+    tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 1.12 },
+    mercurio: { label: 'Motricidad y coordinación corporal', texture: '/static/images/planeta-logica.png', aspect: 1.18 },
+  };
+
   const builtPlanetCatalog = defaultPlanetCatalog.map((planet) => {
     const backendMatch = backendCategories.find((item) => item.slug === planet.key || item.slug === planet.name.toLowerCase());
+    const referenceLabel = targetPlanetReference[planet.key]?.label;
     return {
       ...planet,
       description: backendMatch?.description || 'Planeta del sistema solar con contenido educativo disponible.',
       posts: backendMatch?.posts || [],
       slug: planet.key,
       accent_color: backendMatch?.accent_color || planet.color,
+      displayName: referenceLabel || planet.name,
     };
   });
-
-  const targetPlanetReference = {
-    venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 1.08 },
-    tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 1.12 },
-    mercurio: { label: 'Motricidad y coordinación corporal', texture: '/static/images/planeta-logica.png', aspect: 1.18 },
-  };
 
   if (!canvasHost) return;
 
@@ -676,7 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!planetInfoPanel || !planetInfoTitle || !planetInfoDescription || !planetInfoMeta || !planetInfoPosts) return;
 
     const posts = Array.isArray(planet.posts) ? planet.posts : [];
-    planetInfoTitle.textContent = planet.name;
+    planetInfoTitle.textContent = planet.displayName || planet.name;
     planetInfoDescription.textContent = planet.description;
     planetInfoMeta.innerHTML = '';
 
