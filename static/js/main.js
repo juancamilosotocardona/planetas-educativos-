@@ -237,6 +237,117 @@ document.addEventListener('DOMContentLoaded', () => {
     return sprite;
   };
 
+  const createPlanetTexture = (planetKey) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    const ctx = canvas.getContext('2d');
+
+    const drawEarthTexture = () => {
+      const ocean = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      ocean.addColorStop(0, '#1c7fd6');
+      ocean.addColorStop(0.5, '#2ab0d8');
+      ocean.addColorStop(1, '#133f7a');
+      ctx.fillStyle = ocean;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < 150; i += 1) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const radius = 18 + Math.random() * 90;
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(20, 170, 112, 0.78)' : 'rgba(110, 185, 90, 0.72)';
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (let i = 0; i < 260; i += 1) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const cloudSize = 12 + Math.random() * 42;
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.38)';
+        ctx.arc(x, y, cloudSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const drawJupiterTexture = () => {
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#d9a268');
+      gradient.addColorStop(0.25, '#e8c78b');
+      gradient.addColorStop(0.5, '#d8925d');
+      gradient.addColorStop(0.75, '#c66f43');
+      gradient.addColorStop(1, '#8b4d34');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < canvas.height; y += 30) {
+        ctx.fillStyle = y % 60 === 0 ? 'rgba(255, 247, 220, 0.35)' : 'rgba(113, 59, 29, 0.34)';
+        ctx.fillRect(0, y, canvas.width, 18);
+      }
+
+      ctx.fillStyle = 'rgba(255, 245, 220, 0.7)';
+      ctx.beginPath();
+      ctx.ellipse(760, 660, 140, 90, -0.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
+      ctx.beginPath();
+      ctx.ellipse(200, 300, 180, 100, 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const drawSaturnTexture = () => {
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#f4d69a');
+      gradient.addColorStop(0.3, '#e7c582');
+      gradient.addColorStop(0.6, '#caa66a');
+      gradient.addColorStop(1, '#9d7748');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < canvas.height; y += 26) {
+        ctx.fillStyle = y % 52 === 0 ? 'rgba(255, 245, 220, 0.18)' : 'rgba(120, 78, 30, 0.22)';
+        ctx.fillRect(0, y, canvas.width, 15);
+      }
+
+      for (let i = 0; i < 140; i += 1) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillRect(x, y, Math.random() * 40 + 10, 3);
+      }
+    };
+
+    const planetMap = {
+      tierra: drawEarthTexture,
+      jupiter: drawJupiterTexture,
+      saturno: drawSaturnTexture,
+    };
+
+    if (planetMap[planetKey]) {
+      planetMap[planetKey]();
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    return null;
+  };
+
+  const createPlanetMaterial = (planetKey, planetColor) => {
+    const texture = createPlanetTexture(planetKey);
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: planetColor,
+      emissive: new THREE.Color(planetColor).multiplyScalar(0.18),
+      emissiveIntensity: 0.22,
+      roughness: 0.9,
+      metalness: 0.15,
+    });
+  };
+
   const buildPlanet = (planet, index) => {
     const orbit = new THREE.Object3D();
     orbit.rotation.x = (index % 2 === 0 ? 0.4 : -0.3) + (planet.name === 'Mercurio' ? 0.2 : 0);
@@ -262,14 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     orbitMeshes.push(orbitLine);
 
     const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(planet.radius, 48, 48),
-      new THREE.MeshStandardMaterial({
-        color: planet.color,
-        emissive: planet.color,
-        emissiveIntensity: 0.18,
-        roughness: 0.9,
-        metalness: 0.15,
-      })
+      new THREE.SphereGeometry(planet.radius, 64, 64),
+      createPlanetMaterial(planet.key, planet.color)
     );
     mesh.position.set(planet.distanceScale, 0, 0);
     mesh.rotation.y = Math.random() * Math.PI;
