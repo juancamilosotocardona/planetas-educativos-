@@ -678,15 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const posts = Array.isArray(planet.posts) ? planet.posts : [];
     planetInfoTitle.textContent = planet.name;
     planetInfoDescription.textContent = planet.description;
-    planetInfoMeta.innerHTML = `
-      <div><strong>Diámetro:</strong> ${planet.diameter}</div>
-      <div><strong>Distancia media:</strong> ${planet.distance}</div>
-      <div><strong>Día:</strong> ${planet.day}</div>
-      <div><strong>Año:</strong> ${planet.year}</div>
-      <div><strong>Temperatura:</strong> ${planet.temperature}</div>
-      <div><strong>Composición:</strong> ${planet.composition}</div>
-      <div><strong>Lunas:</strong> ${planet.moons}</div>
-    `;
+    planetInfoMeta.innerHTML = '';
 
     if (posts.length === 0) {
       planetInfoPosts.innerHTML = '<div class="planet-empty-state">Aún no hay contenidos publicados para este planeta. El contenido aparecerá aquí cuando un editor lo publique.</div>';
