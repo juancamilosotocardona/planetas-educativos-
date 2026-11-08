@@ -38,7 +38,7 @@ def ensure_default_categories(sender=None, **kwargs):
     defaults = [
         {
             'name': 'Mercurio',
-            'description': 'Noticias y novedades educativas para estar al día con el campo deportivo y pedagógico.',
+            'description': 'Descripción: Este planeta está dedicado a mostrar y enseñar, a través de videotutoriales en forma de cuentos narrados, distintos modos en los que se puede estimular la coordinación y la motricidad fina y gruesa.',
             'accent_color': '#f472b6',
             'orbit_color': '#f472b6',
             'order': 1,
