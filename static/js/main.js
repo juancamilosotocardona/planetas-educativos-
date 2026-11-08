@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const targetPlanetReference = {
-    venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 398 / 335 },
-    tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 328 / 307 },
-    mercurio: { label: 'Motricidad y coordinación corporal', texture: '/static/images/planeta-logica.png', aspect: 575 / 510 },
+    venus: { label: 'Planeta Creación', texture: '/static/images/planeta-creacion.png', aspect: 1.08 },
+    tierra: { label: 'Planeta Puentes Predeportivos', texture: '/static/images/planeta-puentes.png', aspect: 1.12 },
+    mercurio: { label: 'Motricidad y coordinación corporal', texture: '/static/images/planeta-logica.png', aspect: 1.18 },
   };
 
   if (!canvasHost) return;
@@ -447,6 +447,128 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const decorateTargetPlanet = (planetKey, mesh) => {
+    const decorations = new THREE.Group();
+    const radius = mesh.geometry.parameters.radius || 1;
+
+    if (planetKey === 'venus') {
+      const palette = ['#6fbf4a', '#9b59d0', '#3aa6d8', '#ee5c8f', '#f2b632', '#e8503a', '#5ec9c7'];
+      const directions = [];
+      for (let i = 0; i < 18; i += 1) {
+        const theta = (i / 18) * Math.PI * 2;
+        const phi = ((i % 4) / 4) * Math.PI;
+        directions.push(new THREE.Vector3(Math.cos(theta) * Math.sin(phi), Math.cos(phi), Math.sin(theta) * Math.sin(phi)).normalize());
+      }
+
+      directions.forEach((dir, index) => {
+        const isPencil = index % 3 === 2;
+        const group = new THREE.Group();
+        const body = new THREE.Mesh(
+          isPencil ? new THREE.CylinderGeometry(0.08, 0.08, 0.45, 12) : new THREE.SphereGeometry(0.12, 18, 18),
+          new THREE.MeshStandardMaterial({
+            color: palette[index % palette.length],
+            roughness: 0.7,
+            metalness: 0.1,
+          })
+        );
+
+        if (isPencil) {
+          const tip = new THREE.Mesh(
+            new THREE.ConeGeometry(0.08, 0.18, 12),
+            new THREE.MeshStandardMaterial({ color: '#f2c9a0', roughness: 0.8 })
+          );
+          tip.position.y = 0.28;
+          group.add(body, tip);
+        } else {
+          const accent = new THREE.Mesh(
+            new THREE.BoxGeometry(0.16, 0.06, 0.16),
+            new THREE.MeshStandardMaterial({ color: '#f4f3ef', roughness: 0.75 })
+          );
+          accent.position.y = 0.18;
+          group.add(body, accent);
+        }
+
+        group.position.copy(dir.clone().multiplyScalar(radius * 1.18));
+        group.lookAt(0, 0, 0);
+        group.rotation.z += index * 0.4;
+        decorations.add(group);
+      });
+    }
+
+    if (planetKey === 'tierra') {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(radius * 1.18, radius * 1.36, 96),
+        new THREE.MeshStandardMaterial({
+          color: '#e2642b',
+          roughness: 0.8,
+          metalness: 0.1,
+          side: THREE.DoubleSide,
+        })
+      );
+      ring.rotation.x = Math.PI / 2;
+      ring.rotation.z = 0.42;
+      decorations.add(ring);
+
+      for (let i = 0; i < 8; i += 1) {
+        const cone = new THREE.Mesh(
+          new THREE.ConeGeometry(0.12, 0.28, 10),
+          new THREE.MeshStandardMaterial({ color: i % 2 === 0 ? '#f08a24' : '#e8503a', roughness: 0.75 })
+        );
+        const angle = (i / 8) * Math.PI * 2;
+        cone.position.set(Math.cos(angle) * radius * 1.25, Math.sin(angle * 2) * 0.18, Math.sin(angle) * radius * 1.25);
+        cone.lookAt(0, 0, 0);
+        cone.rotation.z += Math.PI;
+        decorations.add(cone);
+      }
+    }
+
+    if (planetKey === 'mercurio') {
+      const gearColors = ['#f2a32c', '#2a8fb8', '#8fa6c8', '#e8503a', '#3fb6c9'];
+      gearColors.forEach((color, index) => {
+        const group = new THREE.Group();
+        const core = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.18, 0.18, 0.08, 24),
+          new THREE.MeshStandardMaterial({ color, roughness: 0.72, metalness: 0.5 })
+        );
+        group.add(core);
+
+        for (let tooth = 0; tooth < 10; tooth += 1) {
+          const a = (tooth / 10) * Math.PI * 2;
+          const toothMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(0.06, 0.06, 0.06),
+            new THREE.MeshStandardMaterial({ color, roughness: 0.8 })
+          );
+          toothMesh.position.set(Math.cos(a) * 0.22, 0, Math.sin(a) * 0.22);
+          group.add(toothMesh);
+        }
+
+        const hub = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.06, 0.06, 0.1, 12),
+          new THREE.MeshStandardMaterial({ color: '#13244a', roughness: 0.9 })
+        );
+        hub.rotation.x = Math.PI / 2;
+        group.add(hub);
+
+        const angle = (index / gearColors.length) * Math.PI * 2;
+        const orbitDistance = radius * (1.26 + (index % 2) * 0.12);
+        group.position.set(Math.cos(angle) * orbitDistance, Math.sin(angle * 2) * 0.24, Math.sin(angle) * orbitDistance);
+        group.rotation.x = Math.PI / 2;
+        decorations.add(group);
+      });
+
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(radius * 1.18, 0.04, 8, 128),
+        new THREE.MeshStandardMaterial({ color: '#7fe0f0', roughness: 0.65, metalness: 0.2 })
+      );
+      ring.rotation.x = Math.PI / 2;
+      decorations.add(ring);
+    }
+
+    if (decorations.children.length > 0) {
+      mesh.add(decorations);
+    }
+  };
+
   const createRingTexture = () => {
     const canvas = document.createElement('canvas');
     canvas.width = 2048;
@@ -510,6 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mesh.rotation.y = Math.random() * Math.PI;
     if (reference) {
       mesh.scale.set(reference.aspect, 1, 1);
+      decorateTargetPlanet(planet.key, mesh);
     }
     orbit.add(mesh);
     planetMeshes.push(mesh);
