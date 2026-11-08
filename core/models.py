@@ -37,21 +37,24 @@ def ensure_default_categories(sender=None, **kwargs):
 
     defaults = [
         {
-            'name': 'Mercurio',
+            'slug': 'mercurio',
+            'name': 'Motricidad y coordinación corporal',
             'description': 'Descripción: Este planeta está dedicado a mostrar y enseñar, a través de videotutoriales en forma de cuentos narrados, distintos modos en los que se puede estimular la coordinación y la motricidad fina y gruesa.',
             'accent_color': '#f472b6',
             'orbit_color': '#f472b6',
             'order': 1,
         },
         {
-            'name': 'Venus',
+            'slug': 'venus',
+            'name': 'Planeta Creación',
             'description': 'Descripción: Este planeta está dedicado a mostrar, a través de videos tutoriales narrados, el proceso de elaboración de manualidades, desde la creación de títeres hasta la creación de máscaras, entre otras actividades. Estos videos podrán servir como referencia para crear sus propias manualidades y adaptarlas a sus clases.',
             'accent_color': '#f4c27a',
             'orbit_color': '#f4c27a',
             'order': 2,
         },
         {
-            'name': 'Tierra',
+            'slug': 'tierra',
+            'name': 'Planeta Puentes Predeportivos',
             'description': 'Descripción: Este planeta está dedicado a mostrar y enseñar, a través de videos tutoriales en forma de cuentos narrados, las distintas actividades predeportivas.',
             'accent_color': '#5eead4',
             'orbit_color': '#5eead4',
@@ -95,8 +98,9 @@ def ensure_default_categories(sender=None, **kwargs):
     ]
 
     for entry in defaults:
+        slug_value = entry.get('slug') or slugify(entry['name'])
         Category.objects.get_or_create(
-            slug=slugify(entry['name']),
+            slug=slug_value,
             defaults={
                 'name': entry['name'],
                 'description': entry['description'],
