@@ -22,7 +22,30 @@ def sanitize_upload_name(filename):
     return cleaned or 'archivo'
 
 
+def ensure_default_admin_account(sender=None, **kwargs):
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    username = os.environ.get('DEFAULT_ADMIN_USERNAME', 'admin')
+    password = os.environ.get('DEFAULT_ADMIN_PASSWORD', 'admin123')
+
+    user, created = User.objects.get_or_create(username=username)
+    user.is_staff = True
+    user.is_superuser = True
+    user.is_active = True
+    user.set_password(password)
+    user.save(update_fields=['is_staff', 'is_superuser', 'is_active', 'password', 'last_login'])
+
+    admin_group, _ = Group.objects.get_or_create(name='Administradores')
+    if user not in admin_group.user_set.all():
+        admin_group.user_set.add(user)
+
+    return user, created
+
+
 def ensure_default_categories(sender=None, **kwargs):
+    ensure_default_admin_account(sender=sender, **kwargs)
+
     editor_group, _ = Group.objects.get_or_create(name='Editores')
     admin_group, _ = Group.objects.get_or_create(name='Administradores')
 
