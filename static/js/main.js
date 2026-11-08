@@ -219,23 +219,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let simulationSpeed = 1;
 
   const makeLabelSprite = (text) => {
+    const safeText = String(text || 'Planeta');
+    const fontSize = 24;
+    const paddingX = 26;
+    const paddingY = 16;
     const canvas = document.createElement('canvas');
-    canvas.width = 220;
-    canvas.height = 60;
     const ctx = canvas.getContext('2d');
+    ctx.font = `700 ${fontSize}px Inter, sans-serif`;
+    const metrics = ctx.measureText(safeText);
+    const width = Math.max(220, Math.ceil(metrics.width + paddingX * 2));
+    const height = 68;
+    canvas.width = width;
+    canvas.height = height;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(2, 6, 23, 0.4)';
-    ctx.strokeStyle = 'rgba(125, 211, 252, 0.6)';
-    ctx.lineWidth = 1.5;
+    ctx.fillStyle = 'rgba(2, 6, 23, 0.58)';
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.9)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(8, 8, canvas.width - 16, canvas.height - 16, 16);
+    ctx.roundRect(10, 10, canvas.width - 20, canvas.height - 20, 18);
     ctx.fill();
     ctx.stroke();
-    ctx.font = '700 26px Inter, sans-serif';
+    ctx.font = `700 ${fontSize}px Inter, sans-serif`;
     ctx.fillStyle = '#f8fafc';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(safeText, canvas.width / 2, canvas.height / 2 + 2);
 
     const texture = new THREE.CanvasTexture(canvas);
     const sprite = new THREE.Sprite(
@@ -246,8 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
         depthTest: false,
       })
     );
-    sprite.scale.set(16, 4.2, 1);
-    sprite.position.y = 1.8;
+    const scaleX = Math.max(8, width / 24);
+    sprite.scale.set(scaleX, 5.2, 1);
+    sprite.position.y = 2.8;
     return sprite;
   };
 
