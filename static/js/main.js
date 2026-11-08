@@ -107,6 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const ambientLight = new THREE.AmbientLight(0x7bb8ff, 0.5);
   scene.add(ambientLight);
 
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.6);
+  keyLight.position.set(140, 90, 130);
+  scene.add(keyLight);
+
+  const fillLight = new THREE.DirectionalLight(0x7dd3fc, 0.8);
+  fillLight.position.set(-120, -70, -110);
+  scene.add(fillLight);
+
   const sunLight = new THREE.PointLight(0xffd76a, 2.2, 1000, 2);
   sunLight.position.set(0, 0, 0);
   scene.add(sunLight);
@@ -377,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.restore();
   };
 
-  const createPlanetTexture = (planetKey) => {
+  const createPlanetSurfaceCanvas = (planetKey) => {
     const canvas = document.createElement('canvas');
     canvas.width = 2048;
     canvas.height = 2048;
@@ -390,25 +398,103 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handler = handlers[planetKey];
-    if (handler) {
-      handler(ctx, canvas.width, canvas.height);
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.needsUpdate = true;
-      return texture;
+    if (!handler) {
+      return canvas;
     }
 
-    return null;
+    handler(ctx, canvas.width, canvas.height);
+
+    const light = ctx.createRadialGradient(
+      canvas.width * 0.3,
+      canvas.height * 0.22,
+      canvas.width * 0.08,
+      canvas.width * 0.5,
+      canvas.height * 0.5,
+      canvas.width * 0.7
+    );
+    light.addColorStop(0, 'rgba(255,255,255,0.72)');
+    light.addColorStop(0.22, 'rgba(255,255,255,0.28)');
+    light.addColorStop(0.62, 'rgba(255,255,255,0.08)');
+    light.addColorStop(1, 'rgba(2,6,23,0.22)');
+    ctx.fillStyle = light;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const shadow = ctx.createRadialGradient(
+      canvas.width * 0.72,
+      canvas.height * 0.68,
+      30,
+      canvas.width * 0.68,
+      canvas.height * 0.72,
+      canvas.width * 0.5
+    );
+    shadow.addColorStop(0, 'rgba(0,0,0,0)');
+    shadow.addColorStop(0.55, 'rgba(6,11,21,0.12)');
+    shadow.addColorStop(1, 'rgba(6,11,21,0.48)');
+    ctx.fillStyle = shadow;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const rim = ctx.createRadialGradient(
+      canvas.width * 0.26,
+      canvas.height * 0.2,
+      10,
+      canvas.width * 0.24,
+      canvas.height * 0.2,
+      canvas.width * 0.42
+    );
+    rim.addColorStop(0, 'rgba(255,255,255,0.9)');
+    rim.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+    rim.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    return canvas;
+  };
+
+  const createPlanetBumpTexture = (canvas) => {
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = canvas.width;
+    bumpCanvas.height = canvas.height;
+    const bumpCtx = bumpCanvas.getContext('2d');
+    bumpCtx.drawImage(canvas, 0, 0);
+
+    const imageData = bumpCtx.getImageData(0, 0, bumpCanvas.width, bumpCanvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const luma = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+      const height = Math.max(0, Math.min(255, luma * 0.72 + 25));
+      data[i] = height;
+      data[i + 1] = height;
+      data[i + 2] = height;
+    }
+
+    bumpCtx.putImageData(imageData, 0, 0);
+
+    const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
+    bumpTexture.needsUpdate = true;
+    return bumpTexture;
+  };
+
+  const createPlanetTexture = (planetKey) => {
+    const canvas = createPlanetSurfaceCanvas(planetKey);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    return { texture, bumpTexture: createPlanetBumpTexture(canvas) };
   };
 
   const createPlanetMaterial = (planetKey, planetColor) => {
-    const texture = createPlanetTexture(planetKey);
+    const { texture, bumpTexture } = createPlanetTexture(planetKey);
     return new THREE.MeshStandardMaterial({
       map: texture,
+      bumpMap: bumpTexture,
+      bumpScale: 0.4,
       color: planetColor,
-      emissive: new THREE.Color(planetColor).multiplyScalar(0.18),
-      emissiveIntensity: 0.22,
+      emissive: new THREE.Color(planetColor).multiplyScalar(0.14),
+      emissiveIntensity: 0.18,
       roughness: 0.9,
-      metalness: 0.15,
+      metalness: 0.12,
+      envMapIntensity: 0.7,
     });
   };
 
