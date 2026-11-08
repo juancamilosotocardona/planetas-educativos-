@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reference = targetPlanetReference[planetKey];
     if (reference) {
       const texture = new THREE.TextureLoader().load(reference.texture);
-      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.encoding = THREE.sRGBEncoding;
       texture.needsUpdate = true;
       texture.wrapS = THREE.ClampToEdgeWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -421,24 +421,20 @@ document.addEventListener('DOMContentLoaded', () => {
     handler(ctx, canvas.width, canvas.height);
 
     const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.encoding = THREE.sRGBEncoding;
     texture.needsUpdate = true;
     return texture;
   };
 
   const createPlanetMaterial = (planetKey, planetColor) => {
     const texture = createPlanetTexture(planetKey);
-    return new THREE.MeshPhysicalMaterial({
+    return new THREE.MeshStandardMaterial({
       map: texture,
       color: planetColor,
-      emissive: new THREE.Color(planetColor).multiplyScalar(0.08),
-      emissiveIntensity: 0.16,
+      emissive: new THREE.Color(planetColor).multiplyScalar(0.12),
+      emissiveIntensity: 0.18,
       roughness: 0.82,
       metalness: 0.12,
-      clearcoat: 0.18,
-      clearcoatRoughness: 0.7,
-      sheen: 0.28,
-      reflectivity: 0.28,
     });
   };
 
