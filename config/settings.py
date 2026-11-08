@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
         'ALLOWED_HOSTS',
-        '127.0.0.1,localhost'
+        '127.0.0.1,localhost,0.0.0.0,testserver,[::1]'
     ).split(',')
     if host.strip()
 ]
@@ -53,11 +53,22 @@ if RENDER_HOST and RENDER_HOST not in ALLOWED_HOSTS:
 # PROTECCIÓN CSRF
 # =====================================================
 
+default_trusted_origins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'https://localhost',
+    'https://127.0.0.1',
+    'https://0.0.0.0',
+    'http://testserver',
+    'https://testserver',
+]
+
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
-        ''
+        ','.join(default_trusted_origins)
     ).split(',')
     if origin.strip()
 ]
