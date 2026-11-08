@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Iniciar sesión | Planetas Educativos{% endblock %}
 {% block content %}
 <section class="auth-shell">
   <div class="auth-card">
     <div class="auth-copy">
       <div class="brand-lockup">
-        <span class="brand-mark">✦</span>
-        <span>Planetas Educativos</span>
+        <img src="{% static 'images/logo-amm-prendiendo.png' %}" alt="Logo AMM Prendiendo" class="brand-logo brand-logo--auth" />
       </div>
       <p class="eyebrow">Acceso privado</p>
       <h1>Panel editorial</h1>

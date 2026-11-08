@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Planetas Educativos | Inicio{% endblock %}
 {% block content %}
 {% if category_data %}
@@ -23,7 +24,9 @@
 
     <div class="scene-ui" aria-live="polite">
       <div class="top-strip">
-        <div class="brand-mini">Planetas Educativos</div>
+        <div class="brand-mini">
+          <img src="{% static 'images/logo-amm-prendiendo.png' %}" alt="Logo AMM Prendiendo" class="brand-logo brand-logo--mini" />
+        </div>
         <button type="button" class="access-switch" id="reopenAccessButton">Entrar / Invitado</button>
       </div>
 

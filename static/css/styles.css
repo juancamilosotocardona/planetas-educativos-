@@ -416,6 +416,32 @@ canvas {
   color: #f8fafc;
 }
 
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-logo {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.brand-logo--header {
+  width: clamp(170px, 18vw, 260px);
+}
+
+.brand-logo--mini {
+  width: clamp(170px, 14vw, 240px);
+  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.18));
+}
+
+.brand-logo--auth {
+  width: clamp(220px, 30vw, 360px);
+}
+
 .brand-mark {
   display: inline-grid;
   place-items: center;

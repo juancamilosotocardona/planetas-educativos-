@@ -27,6 +27,7 @@
           {% if post.cover_image %}
             <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
           {% endif %}
+          
           <div class="content-body">
             <span class="post-meta">{{ post.category.name }} · {{ post.created_at|date:'d M Y' }}</span>
             <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
