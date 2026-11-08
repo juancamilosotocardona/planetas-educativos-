@@ -239,85 +239,116 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const createPlanetTexture = (planetKey) => {
     const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
+    canvas.width = 2048;
+    canvas.height = 2048;
     const ctx = canvas.getContext('2d');
 
     const drawEarthTexture = () => {
       const ocean = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      ocean.addColorStop(0, '#1c7fd6');
-      ocean.addColorStop(0.5, '#2ab0d8');
-      ocean.addColorStop(1, '#133f7a');
+      ocean.addColorStop(0, '#0d5cde');
+      ocean.addColorStop(0.38, '#16a4ea');
+      ocean.addColorStop(0.68, '#0e7fd6');
+      ocean.addColorStop(1, '#082c6d');
       ctx.fillStyle = ocean;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < 150; i += 1) {
+      const continents = [
+        { x: 340, y: 420, rx: 240, ry: 150, rot: -0.3 },
+        { x: 720, y: 560, rx: 220, ry: 150, rot: 0.8 },
+        { x: 1080, y: 780, rx: 200, ry: 120, rot: 0.4 },
+        { x: 1500, y: 560, rx: 180, ry: 120, rot: -0.8 },
+      ];
+
+      continents.forEach((land, index) => {
+        ctx.save();
+        ctx.translate(land.x, land.y);
+        ctx.rotate(land.rot);
+        ctx.beginPath();
+        ctx.moveTo(-land.rx, 0);
+        ctx.bezierCurveTo(-land.rx, -land.ry * 0.7, -land.rx * 0.5, -land.ry, 0, -land.ry * 0.5);
+        ctx.bezierCurveTo(land.rx * 0.55, -land.ry * 0.3, land.rx, land.ry * 0.1, land.rx * 0.9, land.ry * 0.9);
+        ctx.bezierCurveTo(land.rx * 0.1, land.ry * 1.1, -land.rx * 0.7, land.ry * 0.9, -land.rx, 0);
+        ctx.fillStyle = index % 2 === 0 ? '#4fc96f' : '#79d46a';
+        ctx.fill();
+        ctx.restore();
+      });
+
+      for (let i = 0; i < 200; i += 1) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const radius = 18 + Math.random() * 90;
+        const w = 30 + Math.random() * 160;
+        const h = 18 + Math.random() * 80;
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
         ctx.beginPath();
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(20, 170, 112, 0.78)' : 'rgba(110, 185, 90, 0.72)';
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.ellipse(x, y, w, h, Math.random() * Math.PI, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      for (let i = 0; i < 260; i += 1) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const cloudSize = 12 + Math.random() * 42;
+      ctx.fillStyle = 'rgba(255,255,255,0.38)';
+      for (let i = 0; i < 60; i += 1) {
         ctx.beginPath();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.38)';
-        ctx.arc(x, y, cloudSize, 0, Math.PI * 2);
+        ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 18 + Math.random() * 48, 0, Math.PI * 2);
         ctx.fill();
       }
     };
 
     const drawJupiterTexture = () => {
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#d9a268');
-      gradient.addColorStop(0.25, '#e8c78b');
-      gradient.addColorStop(0.5, '#d8925d');
-      gradient.addColorStop(0.75, '#c66f43');
-      gradient.addColorStop(1, '#8b4d34');
+      gradient.addColorStop(0, '#e5c38f');
+      gradient.addColorStop(0.18, '#f0d8a0');
+      gradient.addColorStop(0.46, '#d1915f');
+      gradient.addColorStop(0.7, '#b8663d');
+      gradient.addColorStop(1, '#7e412a');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      for (let y = 0; y < canvas.height; y += 30) {
-        ctx.fillStyle = y % 60 === 0 ? 'rgba(255, 247, 220, 0.35)' : 'rgba(113, 59, 29, 0.34)';
-        ctx.fillRect(0, y, canvas.width, 18);
+      for (let y = 0; y < canvas.height; y += 52) {
+        const isLight = (y / 52) % 2 === 0;
+        ctx.fillStyle = isLight ? 'rgba(255, 244, 215, 0.26)' : 'rgba(97, 43, 20, 0.34)';
+        ctx.fillRect(0, y, canvas.width, 26);
       }
 
-      ctx.fillStyle = 'rgba(255, 245, 220, 0.7)';
+      for (let i = 0; i < 14; i += 1) {
+        const y = 80 + i * 130 + (i % 2) * 18;
+        ctx.fillStyle = i % 3 === 0 ? 'rgba(120, 74, 31, 0.28)' : 'rgba(255, 229, 180, 0.22)';
+        ctx.fillRect(0, y, canvas.width, 12 + i * 2);
+      }
+
+      ctx.fillStyle = 'rgba(255, 240, 210, 0.7)';
       ctx.beginPath();
-      ctx.ellipse(760, 660, 140, 90, -0.6, 0, Math.PI * 2);
+      ctx.ellipse(1450, 980, 290, 120, -0.5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
       ctx.beginPath();
-      ctx.ellipse(200, 300, 180, 100, 0.8, 0, Math.PI * 2);
+      ctx.ellipse(780, 650, 320, 150, 0.8, 0, Math.PI * 2);
       ctx.fill();
     };
 
     const drawSaturnTexture = () => {
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#f4d69a');
-      gradient.addColorStop(0.3, '#e7c582');
-      gradient.addColorStop(0.6, '#caa66a');
-      gradient.addColorStop(1, '#9d7748');
+      gradient.addColorStop(0, '#f7e4b4');
+      gradient.addColorStop(0.22, '#f2d48d');
+      gradient.addColorStop(0.5, '#d7b36d');
+      gradient.addColorStop(0.76, '#b78a4d');
+      gradient.addColorStop(1, '#7b5d38');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      for (let y = 0; y < canvas.height; y += 26) {
-        ctx.fillStyle = y % 52 === 0 ? 'rgba(255, 245, 220, 0.18)' : 'rgba(120, 78, 30, 0.22)';
-        ctx.fillRect(0, y, canvas.width, 15);
+      for (let y = 0; y < canvas.height; y += 42) {
+        ctx.fillStyle = (y / 42) % 2 === 0 ? 'rgba(255, 246, 220, 0.18)' : 'rgba(116, 85, 45, 0.22)';
+        ctx.fillRect(0, y, canvas.width, 18);
       }
 
-      for (let i = 0; i < 140; i += 1) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        ctx.fillStyle = 'rgba(255,255,255,0.12)';
-        ctx.fillRect(x, y, Math.random() * 40 + 10, 3);
+      for (let i = 0; i < 180; i += 1) {
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 36 + Math.random() * 90, 3);
       }
+
+      ctx.fillStyle = 'rgba(238, 222, 185, 0.3)';
+      ctx.beginPath();
+      ctx.ellipse(980, 1080, 420, 140, -0.35, 0, Math.PI * 2);
+      ctx.fill();
     };
 
     const planetMap = {
@@ -346,6 +377,36 @@ document.addEventListener('DOMContentLoaded', () => {
       roughness: 0.9,
       metalness: 0.15,
     });
+  };
+
+  const createRingTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2048;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 120; i += 1) {
+      const alpha = 0.12 + Math.random() * 0.35;
+      const x = Math.random() * canvas.width;
+      const w = 40 + Math.random() * 180;
+      ctx.fillStyle = `rgba(242, 222, 176, ${alpha})`;
+      ctx.fillRect(x, 0, w, canvas.height);
+    }
+
+    ctx.strokeStyle = 'rgba(232, 214, 175, 0.85)';
+    ctx.lineWidth = 4;
+    for (let i = 0; i < 18; i += 1) {
+      const y = 30 + i * 24;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y + (i % 2 === 0 ? 6 : -6));
+      ctx.stroke();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
   };
 
   const buildPlanet = (planet, index) => {
@@ -387,13 +448,17 @@ document.addEventListener('DOMContentLoaded', () => {
     labelSprites.push(label);
 
     if (planet.name === 'Saturno') {
+      const ringTexture = createRingTexture();
       const ring = new THREE.Mesh(
-        new THREE.RingGeometry(planet.radius * 1.7, planet.radius * 2.45, 64),
+        new THREE.RingGeometry(planet.radius * 1.7, planet.radius * 2.7, 128),
         new THREE.MeshStandardMaterial({
-          color: 0xe9d9b1,
+          map: ringTexture,
+          color: 0xefdfba,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.9,
+          roughness: 0.9,
+          metalness: 0.08,
         })
       );
       ring.rotation.x = Math.PI / 2.6;

@@ -404,16 +404,13 @@ canvas {
 .brand-lockup {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.45);
-  border: 1px solid rgba(125, 211, 252, 0.2);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #f8fafc;
+  justify-content: center;
+  padding: 0.8rem 1.1rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 26px rgba(2, 6, 23, 0.18);
+  backdrop-filter: blur(12px);
 }
 
 .brand {
@@ -427,19 +424,37 @@ canvas {
   max-width: 100%;
   height: auto;
   object-fit: contain;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.brand-logo:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 8px 20px rgba(15, 23, 42, 0.12));
 }
 
 .brand-logo--header {
-  width: clamp(170px, 18vw, 260px);
+  width: clamp(180px, 18vw, 270px);
 }
 
 .brand-logo--mini {
-  width: clamp(170px, 14vw, 240px);
-  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.18));
+  width: clamp(180px, 15vw, 240px);
+  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.2));
 }
 
 .brand-logo--auth {
-  width: clamp(220px, 30vw, 360px);
+  width: clamp(240px, 32vw, 420px);
+}
+
+.brand-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 18px rgba(2, 6, 23, 0.12);
+  backdrop-filter: blur(10px);
 }
 
 .brand-mark {
