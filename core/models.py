@@ -52,7 +52,7 @@ def ensure_default_categories(sender=None, **kwargs):
         },
         {
             'name': 'Tierra',
-            'description': 'Salud, bienestar y actividad física para fortalecer hábitos sostenibles.',
+            'description': 'Descripción: Este planeta está dedicado a mostrar y enseñar, a través de videos tutoriales en forma de cuentos narrados, las distintas actividades predeportivas.',
             'accent_color': '#5eead4',
             'orbit_color': '#5eead4',
             'order': 3,
