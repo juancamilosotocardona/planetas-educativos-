@@ -237,128 +237,161 @@ document.addEventListener('DOMContentLoaded', () => {
     return sprite;
   };
 
+  const drawCreationPlanet = (ctx, width, height) => {
+    const base = ctx.createRadialGradient(width * 0.5, height * 0.52, 40, width * 0.5, height * 0.5, width * 0.55);
+    base.addColorStop(0, '#e7f7ff');
+    base.addColorStop(0.35, '#8ecde8');
+    base.addColorStop(0.7, '#7ecad5');
+    base.addColorStop(1, '#5ca2b7');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(width / 2, height / 2, Math.min(width, height) * 0.42, 0, Math.PI * 2);
+    ctx.clip();
+
+    for (let i = 0; i < 15; i += 1) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      ctx.fillStyle = i % 2 === 0 ? '#e2f3bc' : '#8fd588';
+      ctx.beginPath();
+      ctx.arc(x, y, 120 + Math.random() * 180, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < 30; i += 1) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const w = 50 + Math.random() * 120;
+      const h = 18 + Math.random() * 36;
+      ctx.fillStyle = i % 3 === 0 ? '#f2b61f' : '#f9d44a';
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = '#fff4b5';
+      ctx.fillRect(x + 5, y + 4, w - 10, h - 8);
+    }
+
+    for (let i = 0; i < 26; i += 1) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = 18 + Math.random() * 32;
+      ctx.strokeStyle = '#3d678b';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  };
+
+  const drawSportPlanet = (ctx, width, height) => {
+    const base = ctx.createRadialGradient(width * 0.4, height * 0.38, 50, width * 0.5, height * 0.5, width * 0.62);
+    base.addColorStop(0, '#e2f398');
+    base.addColorStop(0.35, '#a9d956');
+    base.addColorStop(0.7, '#5ca64d');
+    base.addColorStop(1, '#2d7a49');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(width / 2, height / 2, Math.min(width, height) * 0.42, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.fillStyle = '#f3f4f0';
+    ctx.fillRect(width * 0.2, height * 0.25, width * 0.6, height * 0.5);
+    ctx.strokeStyle = '#2f6f3e';
+    ctx.lineWidth = 16;
+    ctx.strokeRect(width * 0.22, height * 0.27, width * 0.56, height * 0.46);
+
+    ctx.beginPath();
+    ctx.moveTo(width * 0.26, height * 0.52);
+    ctx.lineTo(width * 0.74, height * 0.52);
+    ctx.moveTo(width * 0.5, height * 0.27);
+    ctx.lineTo(width * 0.5, height * 0.73);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(width * 0.5, height * 0.52, width * 0.18, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#f45c3d';
+    ctx.lineWidth = 24;
+    ctx.beginPath();
+    ctx.ellipse(width * 0.5, height * 0.52, width * 0.32, height * 0.28, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.restore();
+  };
+
+  const drawPuzzlePlanet = (ctx, width, height) => {
+    const base = ctx.createRadialGradient(width * 0.52, height * 0.52, 30, width * 0.5, height * 0.5, width * 0.68);
+    base.addColorStop(0, '#d8fbff');
+    base.addColorStop(0.22, '#9fe7ef');
+    base.addColorStop(0.56, '#5ac0d2');
+    base.addColorStop(1, '#2f8db3');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(width / 2, height / 2, Math.min(width, height) * 0.42, 0, Math.PI * 2);
+    ctx.clip();
+
+    const pieces = [
+      { x: 350, y: 420, w: 250, h: 170, c: '#a2e7e8' },
+      { x: 620, y: 340, w: 260, h: 180, c: '#86dce4' },
+      { x: 1040, y: 420, w: 240, h: 190, c: '#8ae0e7' },
+      { x: 760, y: 760, w: 260, h: 180, c: '#a0dff4' },
+      { x: 420, y: 840, w: 220, h: 150, c: '#9ee3ee' },
+      { x: 1080, y: 820, w: 240, h: 160, c: '#7bd2e0' },
+    ];
+
+    pieces.forEach((piece) => {
+      ctx.fillStyle = piece.c;
+      ctx.fillRect(piece.x, piece.y, piece.w, piece.h);
+      ctx.strokeStyle = 'rgba(12, 82, 110, 0.8)';
+      ctx.lineWidth = 18;
+      ctx.strokeRect(piece.x, piece.y, piece.w, piece.h);
+    });
+
+    ctx.strokeStyle = '#f0a63a';
+    ctx.lineWidth = 20;
+    ctx.beginPath();
+    ctx.moveTo(280, 760);
+    ctx.bezierCurveTo(440, 620, 560, 610, 700, 760);
+    ctx.moveTo(1360, 760);
+    ctx.bezierCurveTo(1190, 620, 1030, 620, 900, 760);
+    ctx.stroke();
+
+    for (let i = 0; i < 20; i += 1) {
+      const x = 220 + Math.random() * (width - 440);
+      const y = 220 + Math.random() * (height - 440);
+      ctx.fillStyle = i % 2 === 0 ? '#ffcc66' : '#ff8c66';
+      ctx.beginPath();
+      ctx.arc(x, y, 18 + Math.random() * 26, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  };
+
   const createPlanetTexture = (planetKey) => {
     const canvas = document.createElement('canvas');
     canvas.width = 2048;
     canvas.height = 2048;
     const ctx = canvas.getContext('2d');
 
-    const drawEarthTexture = () => {
-      const ocean = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      ocean.addColorStop(0, '#0d5cde');
-      ocean.addColorStop(0.38, '#16a4ea');
-      ocean.addColorStop(0.68, '#0e7fd6');
-      ocean.addColorStop(1, '#082c6d');
-      ctx.fillStyle = ocean;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const continents = [
-        { x: 340, y: 420, rx: 240, ry: 150, rot: -0.3 },
-        { x: 720, y: 560, rx: 220, ry: 150, rot: 0.8 },
-        { x: 1080, y: 780, rx: 200, ry: 120, rot: 0.4 },
-        { x: 1500, y: 560, rx: 180, ry: 120, rot: -0.8 },
-      ];
-
-      continents.forEach((land, index) => {
-        ctx.save();
-        ctx.translate(land.x, land.y);
-        ctx.rotate(land.rot);
-        ctx.beginPath();
-        ctx.moveTo(-land.rx, 0);
-        ctx.bezierCurveTo(-land.rx, -land.ry * 0.7, -land.rx * 0.5, -land.ry, 0, -land.ry * 0.5);
-        ctx.bezierCurveTo(land.rx * 0.55, -land.ry * 0.3, land.rx, land.ry * 0.1, land.rx * 0.9, land.ry * 0.9);
-        ctx.bezierCurveTo(land.rx * 0.1, land.ry * 1.1, -land.rx * 0.7, land.ry * 0.9, -land.rx, 0);
-        ctx.fillStyle = index % 2 === 0 ? '#4fc96f' : '#79d46a';
-        ctx.fill();
-        ctx.restore();
-      });
-
-      for (let i = 0; i < 200; i += 1) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const w = 30 + Math.random() * 160;
-        const h = 18 + Math.random() * 80;
-        ctx.fillStyle = 'rgba(255,255,255,0.18)';
-        ctx.beginPath();
-        ctx.ellipse(x, y, w, h, Math.random() * Math.PI, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.fillStyle = 'rgba(255,255,255,0.38)';
-      for (let i = 0; i < 60; i += 1) {
-        ctx.beginPath();
-        ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 18 + Math.random() * 48, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    const handlers = {
+      mercurio: drawCreationPlanet,
+      venus: drawSportPlanet,
+      tierra: drawPuzzlePlanet,
     };
 
-    const drawJupiterTexture = () => {
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#e5c38f');
-      gradient.addColorStop(0.18, '#f0d8a0');
-      gradient.addColorStop(0.46, '#d1915f');
-      gradient.addColorStop(0.7, '#b8663d');
-      gradient.addColorStop(1, '#7e412a');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let y = 0; y < canvas.height; y += 52) {
-        const isLight = (y / 52) % 2 === 0;
-        ctx.fillStyle = isLight ? 'rgba(255, 244, 215, 0.26)' : 'rgba(97, 43, 20, 0.34)';
-        ctx.fillRect(0, y, canvas.width, 26);
-      }
-
-      for (let i = 0; i < 14; i += 1) {
-        const y = 80 + i * 130 + (i % 2) * 18;
-        ctx.fillStyle = i % 3 === 0 ? 'rgba(120, 74, 31, 0.28)' : 'rgba(255, 229, 180, 0.22)';
-        ctx.fillRect(0, y, canvas.width, 12 + i * 2);
-      }
-
-      ctx.fillStyle = 'rgba(255, 240, 210, 0.7)';
-      ctx.beginPath();
-      ctx.ellipse(1450, 980, 290, 120, -0.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = 'rgba(255,255,255,0.15)';
-      ctx.beginPath();
-      ctx.ellipse(780, 650, 320, 150, 0.8, 0, Math.PI * 2);
-      ctx.fill();
-    };
-
-    const drawSaturnTexture = () => {
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#f7e4b4');
-      gradient.addColorStop(0.22, '#f2d48d');
-      gradient.addColorStop(0.5, '#d7b36d');
-      gradient.addColorStop(0.76, '#b78a4d');
-      gradient.addColorStop(1, '#7b5d38');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let y = 0; y < canvas.height; y += 42) {
-        ctx.fillStyle = (y / 42) % 2 === 0 ? 'rgba(255, 246, 220, 0.18)' : 'rgba(116, 85, 45, 0.22)';
-        ctx.fillRect(0, y, canvas.width, 18);
-      }
-
-      for (let i = 0; i < 180; i += 1) {
-        ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 36 + Math.random() * 90, 3);
-      }
-
-      ctx.fillStyle = 'rgba(238, 222, 185, 0.3)';
-      ctx.beginPath();
-      ctx.ellipse(980, 1080, 420, 140, -0.35, 0, Math.PI * 2);
-      ctx.fill();
-    };
-
-    const planetMap = {
-      tierra: drawEarthTexture,
-      jupiter: drawJupiterTexture,
-      saturno: drawSaturnTexture,
-    };
-
-    if (planetMap[planetKey]) {
-      planetMap[planetKey]();
+    const handler = handlers[planetKey];
+    if (handler) {
+      handler(ctx, canvas.width, canvas.height);
       const texture = new THREE.CanvasTexture(canvas);
       texture.needsUpdate = true;
       return texture;
